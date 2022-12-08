@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+echo "-- Exchange Aggregation Service for TradeSoft --"
+printf "\n-- Preparing build --\n\n"
+
+mvn clean install -U -DskipTests || exit
+
+printf "\n-- Running build --\n"
+printf "\n-- Once complete please navigate to http://localhost:8080 --\n"
+
+docker-compose up --build || exit

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="anietie.asuquo" id="create_exchange_metadata_upload_table">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="exchange_metadata_upload" schemaName="public"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="exchange_metadata_upload" schemaName="public">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="exchange_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="file" type="blob">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="date_created" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_completed" type="timestamp with time zone">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="exchange_metadata_upload" indexName="idx_exchange_metadata_upload_id">
+            <column name="id"/>
+        </createIndex>
+
+        <createIndex tableName="exchange_metadata_upload" indexName="idx_exchange_metadata_upload_exchange_type">
+            <column name="exchange_type"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="exchange_metadata_upload" indexName="idx_exchange_metadata_upload_id"
+                       schemaName="public"/>
+            <dropIndex tableName="exchange_metadata_upload" indexName="idx_exchange_metadata_upload_exchange_type"
+                       schemaName="public"/>
+            <dropTable tableName="exchange_metadata_upload" schemaName="public"/>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

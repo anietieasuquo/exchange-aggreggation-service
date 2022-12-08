@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: exchange-aggregation-service
+  liquibase:
+    change-log: classpath:/changelog/db.changelog-master.yaml
+    enabled: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        current_session_context_class: 'org.springframework.orm.hibernate5.SpringSessionContext'
+    database: postgresql
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: 'jdbc:tc:postgresql:12://exchange-aggregation-service-test'
+    username: 'test'
+    password: 'test'
+    hikari:
+      auto-commit: false
+  data:
+    redis:
+      repositories:
+        enabled: true
+      port: 6379
+      host: localhost
+  kafka:
+    bootstrap-servers: localhost:9092,kafka:29092
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "com.tradesoft.exchangeaggregationservice.periphery.events"
+          deserializer:
+            value:
+              delegate:
+                class: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: exchange-metadata
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 1
+      idle-between-polls: 3000
+      poll-timeout: 700000
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+Kafka:
+  topics:
+    exchange-metadata: exchange-metadata-test
+
+logging:
+  level:
+    root: debug
+    org:
+      springframework:
+        web: off
+        kafka: off
+      apache:
+        kafka: off
+        tomcat: off
+    web: off
+    com:
+      tradesoft: trace
+
+blockchaindotcom:
+  service:
+    url: 'http://localhost:3000'
+pagination:
+  config:
+    metadata-default-page-size: 100
+
+cache:
+  exchangeMetadataCacheName: exchange-metadata-cache
+  exchangeMetadataCacheDurationInMinutes: 43200
+  exchangeMetadataUploadCacheName: exchange-metadata-upload-cache
+  exchangeMetadataUploadCacheDurationInMinutes: 43200

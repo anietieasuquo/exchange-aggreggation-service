@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="anietie.asuquo" id="create_exchange_metadata_table">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="exchange_metadata" schemaName="public"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="exchange_metadata" schemaName="public">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="exchange_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="data_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="data_value" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="upload_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_created" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="date_updated" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <rollback>
+
+        </rollback>
+
+        <createIndex tableName="exchange_metadata" indexName="idx_reference_exchange_metadata_id">
+            <column name="id"/>
+        </createIndex>
+
+        <createIndex tableName="exchange_metadata" indexName="idx_exchange_exchange_metadata_type">
+            <column name="exchange_type"/>
+        </createIndex>
+
+        <createIndex tableName="exchange_metadata" indexName="idx_data_exchange_exchange_metadata_key">
+            <column name="data_key"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="exchange_metadata" indexName="idx_reference_exchange_metadata_id"
+                       schemaName="public"/>
+            <dropIndex tableName="exchange_metadata" indexName="idx_exchange_exchange_metadata_type"
+                       schemaName="public"/>
+            <dropIndex tableName="exchange_metadata" indexName="idx_data_exchange_exchange_metadata_key"
+                       schemaName="public"/>
+            <dropTable tableName="exchange_metadata" schemaName="public"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
