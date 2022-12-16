@@ -1,5 +1,6 @@
 package com.tradesoft.exchangeaggregationservice.periphery.controller
 
+import com.tradesoft.exchangeaggregationservice.config.PaginationProperties
 import com.tradesoft.exchangeaggregationservice.core.business.OrderBookFilter
 import com.tradesoft.exchangeaggregationservice.core.business.enums.ExchangeType
 import com.tradesoft.exchangeaggregationservice.core.business.enums.OrderType
@@ -26,7 +27,8 @@ import org.springframework.web.multipart.MultipartFile
 @Tag(name = "Exchange Controller")
 class ExchangeController(
     private val exchangeRoutingService: ExchangeRoutingService,
-    private val exchangePersistenceService: ExchangePersistenceService
+    private val exchangePersistenceService: ExchangePersistenceService,
+    private val paginationProperties: PaginationProperties
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -125,8 +127,8 @@ class ExchangeController(
         }.let {
             exchangePersistenceService.getMetadata(
                 exchange = exchangeName,
-                pageNumber = pageNumber,
-                pageSize = pageSize
+                pageNumber = pageNumber ?: 0,
+                pageSize = pageSize ?: paginationProperties.metadataDefaultPageSize
             )
         }.also {
             log.debug(
@@ -189,8 +191,8 @@ class ExchangeController(
         }.let {
             exchangePersistenceService.getMetadataUploads(
                 exchange = exchangeName,
-                pageNumber = pageNumber,
-                pageSize = pageSize
+                pageNumber = pageNumber ?: 0,
+                pageSize = pageSize ?: paginationProperties.metadataDefaultPageSize
             )
         }.also {
             log.debug(

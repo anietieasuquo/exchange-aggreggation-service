@@ -34,7 +34,7 @@ spring:
       repositories:
         enabled: true
       port: 6379
-      host: localhost
+      host: redis
   kafka:
     bootstrap-servers: localhost:9092,kafka:29092
     consumer:

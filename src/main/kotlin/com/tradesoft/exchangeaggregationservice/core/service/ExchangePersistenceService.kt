@@ -1,16 +1,15 @@
 package com.tradesoft.exchangeaggregationservice.core.service
 
-import com.tradesoft.exchangeaggregationservice.config.PaginationProperties
 import com.tradesoft.exchangeaggregationservice.config.async.AsyncProvider
+import com.tradesoft.exchangeaggregationservice.core.business.TradeSoftPage
 import com.tradesoft.exchangeaggregationservice.core.business.enums.ExchangeType
 import com.tradesoft.exchangeaggregationservice.core.business.enums.MetadataUploadStatus
 import com.tradesoft.exchangeaggregationservice.core.domain.ExchangeMetadataUploadEntity
-import com.tradesoft.exchangeaggregationservice.core.mapper.BlockchainDotComMapper.toExchangeMetadataUpload
 import com.tradesoft.exchangeaggregationservice.core.mapper.BlockchainDotComMapper.toExchangeMetadata
+import com.tradesoft.exchangeaggregationservice.core.mapper.BlockchainDotComMapper.toExchangeMetadataUpload
 import com.tradesoft.exchangeaggregationservice.core.repository.ExchangeMetadataEntityRepository
 import com.tradesoft.exchangeaggregationservice.core.repository.ExchangeMetadataUploadEntityRepository
 import com.tradesoft.exchangeaggregationservice.core.repository.GenericMetadataEntityRepository
-import com.tradesoft.exchangeaggregationservice.core.business.TradeSoftPage
 import com.tradesoft.exchangeaggregationservice.exception.BusinessException
 import com.tradesoft.exchangeaggregationservice.exception.ErrorCategory
 import com.tradesoft.exchangeaggregationservice.exception.ErrorCategory.USER_INPUT_ERROR
@@ -32,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile
 
 @Service
 class ExchangePersistenceService(
-    private val paginationProperties: PaginationProperties,
     private val exchangeMetadataEntityRepository: ExchangeMetadataEntityRepository,
     private val exchangeMetadataUploadEntityRepository: ExchangeMetadataUploadEntityRepository,
     @Qualifier("genericMetadataEntityRepositoryImpl") private val genericMetadataEntityRepository: GenericMetadataEntityRepository,
@@ -49,12 +47,12 @@ class ExchangePersistenceService(
         value = ["exchange-metadata-cache"],
         key = "#exchange.toString() + '_' + #pageNumber + '_' + #pageSize"
     )
-    fun getMetadata(exchange: ExchangeType, pageNumber: Int?, pageSize: Int?): TradeSoftPage<ExchangeMetadata> =
+    fun getMetadata(exchange: ExchangeType, pageNumber: Int, pageSize: Int): TradeSoftPage<ExchangeMetadata> =
         exchangeMetadataEntityRepository.findAllByExchangeType(
             exchangeType = exchange,
             pageable = PageRequest.of(
-                pageNumber ?: 0,
-                pageSize ?: paginationProperties.metadataDefaultPageSize
+                pageNumber,
+                pageSize
             )
         )
             .also { log.debug("Found ${it.totalElements} records for ExchangeMetadata") }
@@ -66,14 +64,14 @@ class ExchangePersistenceService(
     )
     fun getMetadataUploads(
         exchange: ExchangeType,
-        pageNumber: Int?,
-        pageSize: Int?
+        pageNumber: Int,
+        pageSize: Int
     ): TradeSoftPage<ExchangeMetadataUpload> =
         exchangeMetadataUploadEntityRepository.findAllByExchangeType(
             exchangeType = exchange,
             pageable = PageRequest.of(
-                pageNumber ?: 0,
-                pageSize ?: paginationProperties.metadataDefaultPageSize
+                pageNumber,
+                pageSize
             )
         )
             .also { log.debug("Found ${it.size} records for ExchangeMetadataUpload") }
